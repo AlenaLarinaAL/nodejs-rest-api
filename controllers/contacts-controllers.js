@@ -1,17 +1,17 @@
-const contacts = require("../models/contacts.js");
+import Contact from "../models/contacts.js";
 
-const HttpError = require("../helpers/index.js");
+import { HttpError } from "../helpers/index.js";
 
-const { ctrlWrapper } = require("../decorators/index.js");
+import { ctrlWrapper } from "../decorators/index.js";
 
 const listContacts = async (req, res) => {
-  const result = await contacts.listContacts();
-  res.status(200).json(result);
+  const result = await Contact.find();
+  res.json(result);
 };
 
 const getContactById = async (req, res) => {
   const { contactId } = req.params;
-  const result = await contacts.getContactById(contactId);
+  const result = await Contact.findById(contactId);
 
   if (!result) {
     throw HttpError(404, `Contact with ${contactId} not found!`);
@@ -20,14 +20,14 @@ const getContactById = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-  const result = await contacts.addContact(req.body);
+  const result = await Contact.create(req.body);
   res.status(201).json(result);
 };
 
 const removeContact = async (req, res) => {
   const { contactId } = req.params;
 
-  const result = await contacts.removeContact(contactId);
+  const result = await Contact.findByIdAndDelete(contactId);
 
   if (!result) {
     throw HttpError(404, `Contact with ${contactId} not found!`);
@@ -41,7 +41,9 @@ const removeContact = async (req, res) => {
 const updateContact = async (req, res) => {
   const { contactId } = req.params;
 
-  const result = await contacts.updateContact(contactId, req.body);
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
 
   if (!result) {
     throw HttpError(404, `Contact with ${contactId} not found!`);
@@ -50,10 +52,25 @@ const updateContact = async (req, res) => {
   res.status(201).json(result);
 };
 
-module.exports = {
+const updateFavorite = async (req, res) => {
+  const { contactId } = req.params;
+
+  const result = await Contact.findByIdAndUpdate(contactId, req.body, {
+    new: true,
+  });
+
+  if (!result) {
+    throw HttpError(404, `Contact with ${contactId} not found!`);
+  }
+
+  res.status(201).json(result);
+};
+
+export default {
   listContacts: ctrlWrapper(listContacts),
   getContactById: ctrlWrapper(getContactById),
   addContact: ctrlWrapper(addContact),
   removeContact: ctrlWrapper(removeContact),
   updateContact: ctrlWrapper(updateContact),
+  updateFavorite: ctrlWrapper(updateFavorite),
 };
