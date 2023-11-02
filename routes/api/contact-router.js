@@ -27,6 +27,9 @@ contactsRouter.get("/:contactId", isValidId, contactsController.getContactById);
 
 contactsRouter.post(
   "/",
+  // upload.fields([{name: "avatar", maxCount:1}]),
+  // upload.array("avatar", 8),
+  // upload.single("avatar"),
   isEmptyBody,
   contactAddValidate,
   contactsController.addContact
